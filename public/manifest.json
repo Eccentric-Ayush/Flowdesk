@@ -1,0 +1,19 @@
+{
+  "name": "Flowdesk — Productivity & Task Manager",
+  "short_name": "Flowdesk",
+  "description": "A modern productivity and daily task management application",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0e14",
+  "theme_color": "#0c0e14",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"]
+}

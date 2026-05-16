@@ -1,0 +1,762 @@
+/* ═══════════════════════════════════════════════
+   AUTH PAGE — Glassmorphic Authentication Gateway
+   ═══════════════════════════════════════════════ */
+
+/* ── Root / Background ── */
+.auth-root {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, #0d1224 0%, #070a12 60%, #040711 100%);
+  padding: 24px 16px;
+  /* Keyboard avoidance on mobile */
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
+
+/* ── Animated blobs ── */
+.auth-blobs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.auth-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  will-change: transform;
+}
+
+.auth-blob--indigo {
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, #6366f1 0%, #4f46e5 60%, transparent 100%);
+  top: -180px;
+  left: -120px;
+  animation: blob-drift-1 18s ease-in-out infinite;
+}
+
+.auth-blob--teal {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, #06b6d4 0%, #0891b2 60%, transparent 100%);
+  bottom: -160px;
+  right: -100px;
+  animation: blob-drift-2 22s ease-in-out infinite;
+}
+
+.auth-blob--purple {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #a855f7 0%, #7c3aed 60%, transparent 100%);
+  top: 40%;
+  left: 55%;
+  animation: blob-drift-3 16s ease-in-out infinite;
+  opacity: 0.2;
+}
+
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33%       { transform: translate(60px, 40px) rotate(60deg) scale(1.08); }
+  66%       { transform: translate(-30px, 70px) rotate(120deg) scale(0.95); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33%       { transform: translate(-50px, -60px) rotate(-45deg) scale(1.1); }
+  66%       { transform: translate(40px, -30px) rotate(-90deg) scale(0.92); }
+}
+
+@keyframes blob-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(-40px, 50px) scale(1.15); }
+}
+
+/* ── Noise overlay ── */
+.auth-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Card outer (handles 3D tilt) ── */
+.auth-card-outer {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px;
+  transform-style: preserve-3d;
+}
+
+/* ── Glassmorphism Card ── */
+.auth-card {
+  position: relative;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 24px;
+  padding: 36px 32px 28px;
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.08),
+    0 32px 64px -12px rgba(0, 0, 0, 0.55),
+    0 4px 16px -4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Glow ring on hover */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.auth-card-outer:hover .auth-card::before {
+  opacity: 1;
+}
+
+/* ── Header ── */
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
+}
+
+.auth-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #e8eaf0;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.auth-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 4px 0 0;
+  letter-spacing: -0.01em;
+}
+
+/* ── Mode Toggle Pill ── */
+.auth-mode-pill {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.auth-mode-indicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  border-radius: 9px;
+  z-index: 0;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.12);
+}
+
+.auth-mode-btn {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 7px 12px;
+  border-radius: 9px;
+  transition: color 0.2s ease;
+  color: #6b7280;
+  font-family: inherit;
+}
+
+.auth-mode-btn--active {
+  color: #e8eaf0;
+}
+
+/* ── Social Auth Buttons ── */
+.auth-social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.auth-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #a0a8c0;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-social-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.2s ease;
+}
+
+.auth-social-btn:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #e8eaf0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.auth-social-btn:hover::before {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.auth-social-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Divider ── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.auth-divider-text {
+  font-size: 0.6875rem;
+  color: #4e546b;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ── Form ── */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Floating Label Input ── */
+.auth-floating-wrapper {
+  position: relative;
+}
+
+.auth-floating-input {
+  width: 100%;
+  padding: 16px 14px 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e8eaf0;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.auth-floating-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(99, 102, 241, 0.06);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* When there's a right slot, add padding-right */
+.auth-floating-wrapper:has(.auth-input-right-slot) .auth-floating-input {
+  padding-right: 44px;
+}
+
+.auth-floating-label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  color: #4e546b;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: -0.01em;
+  font-family: inherit;
+  transform-origin: left top;
+}
+
+.auth-floating-label--lifted {
+  top: 9px;
+  transform: translateY(0) scale(0.78);
+}
+
+.auth-floating-label--active {
+  color: #818cf8;
+}
+
+.auth-input-right-slot {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Password Toggle ── */
+.auth-pw-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4e546b;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, background 0.2s ease;
+  font-family: inherit;
+}
+
+.auth-pw-toggle:hover {
+  color: #a0a8c0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Forgot Password ── */
+.auth-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+}
+
+.auth-forgot-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #6366f1;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+  padding: 2px 0;
+  transition: color 0.2s ease, opacity 0.2s ease;
+  opacity: 0.8;
+}
+
+.auth-forgot-link:hover {
+  opacity: 1;
+  color: #818cf8;
+}
+
+/* ── Shake Animation ── */
+@keyframes auth-shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-5px) rotate(-1deg); }
+  30%       { transform: translateX(5px) rotate(1deg); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+
+.auth-shake {
+  animation: auth-shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+/* ── Error Message ── */
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 10px;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+}
+
+/* ── Submit Button ── */
+.auth-submit-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.4),
+    0 4px 16px rgba(99, 102, 241, 0.35),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.25s ease, opacity 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.auth-submit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+  border-radius: inherit;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.5),
+    0 6px 24px rgba(99, 102, 241, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.auth-btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ── Loading Spinner ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-spinner {
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Footer ── */
+.auth-footer-text {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #4e546b;
+  margin-top: 20px;
+  letter-spacing: -0.01em;
+}
+
+.auth-footer-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: #818cf8;
+  font-weight: 500;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.auth-footer-link:hover {
+  color: #a5b4fc;
+}
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 480px) {
+  .auth-root {
+    align-items: flex-end;
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .auth-card-outer {
+    max-width: 100%;
+    /* Disable 3D tilt on mobile */
+    transform: none !important;
+  }
+
+  .auth-card {
+    border-radius: 24px 24px 0 0;
+    padding: 28px 20px 32px;
+    border-bottom: none;
+  }
+
+  .auth-title {
+    font-size: 1.375rem;
+  }
+
+  /* Scroll up on keyboard open via CSS trick */
+  .auth-root:has(input:focus) {
+    align-items: flex-start;
+    padding-top: 16px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+  .auth-card {
+    padding: 30px 24px 24px;
+  }
+}
+
+/* ── App-specific animations ─────────────────── */
+
+/* Page fade-in */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Task completion: slide up + fade out */
+@keyframes task-complete {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateX(6px);
+  }
+  100% {
+    opacity: 0.5;
+    transform: translateX(0);
+  }
+}
+.animate-task-complete {
+  animation: task-complete 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Checkbox pop */
+@keyframes checkbox-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.animate-checkbox-pop {
+  animation: checkbox-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Gentle pulse for streaks / highlights */
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-gentle-pulse {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+/* Hide scrollbar for date strip */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glassmorphism */
+.glassmorphism-border {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Kanban Board Styles ─────────────────── */
+
+/* Column slide-in animation */
+@keyframes column-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#kanban-board > div {
+  animation: column-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+#kanban-board > div:nth-child(2) {
+  animation-delay: 0.06s;
+}
+#kanban-board > div:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+/* Drag placeholder ghost */
+[data-rfd-placeholder-context-id] {
+  background: rgba(99, 102, 241, 0.06) !important;
+  border: 2px dashed rgba(99, 102, 241, 0.2) !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Dragging card shadow enhancement */
+[data-rfd-draggable-context-id][data-rfd-drag-handle-draggable-id] {
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+/* View mode transition */
+#list-view,
+#kanban-board {
+  animation: fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Mobile Touch / Haptic Styles ──────────── */
+
+/* Haptic press feedback: subtle scale-down on active state */
+@keyframes haptic-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* Task items: press-and-hold feedback on mobile */
+@media (max-width: 767px) {
+  #task-list li:active,
+  .kanban-card:active {
+    animation: haptic-press 0.15s ease-out;
+  }
+}
+
+/* Bottom bar slide-up */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* FAB pulse ring */
+@keyframes fab-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+/* Mobile QuickAdd overlay */
+@keyframes quick-add-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-quick-add-enter {
+  animation: quick-add-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Kanban tab content fade */
+@keyframes tab-fade {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-tab-fade {
+  animation: tab-fade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile-specific: prevent text selection on task items */
+@media (max-width: 767px) {
+  #task-list,
+  #kanban-board,
+  .mobile-bottom-bar {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Scroll margin for input focus on mobile */
+#quick-add,
+#mobile-quick-add {
+  scroll-margin-bottom: 120px;
+}
