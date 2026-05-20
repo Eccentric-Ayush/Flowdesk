@@ -53,7 +53,7 @@
 - **Collapsible Sidebar** — Desktop sidebar with active indicator bars, badges, and smooth collapse/expand.
 
 ### 🔐 Authentication
-- **Auth Gateway** — Beautiful sign-in / sign-up page with animated floating labels, parallax card tilt, and social login buttons (Google & GitHub).
+- **Auth Gateway** — Beautiful and interactive sign-in / sign-up page with animated floating labels, parallax card tilt, and social login buttons (Google & GitHub).
 - **Mode Toggle** — Animated pill switch between Sign In and Sign Up with smooth field transitions.
 
 ### 📱 Progressive Web App (PWA)
