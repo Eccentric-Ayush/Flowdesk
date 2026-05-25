@@ -225,5 +225,5 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 <p align="center">
-  Built with 💜 by <a href="https://github.com/Eccentric-Ayush">Ayush</a>
+  Built with 💜 by <a href="https://github.com/Eccentric-Ayush">Ayush Kumar Singh</a>
 </p>
